@@ -1,7 +1,10 @@
-plugins {
-    id 'com.android.application'
-    id 'kotlin-android'
-}
+import dependencies.*
+
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
+apply from: Deps.dependency
 
 android {
     compileSdkVersion 29

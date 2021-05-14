@@ -12,8 +12,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 
 import com.papps.lovehome.dummy.DummyContent
+import dagger.android.AndroidInjection
+import javax.inject.Inject
 
 /**
  * An activity representing a list of Pings. This activity
@@ -29,10 +35,18 @@ class ItemListActivity : AppCompatActivity() {
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
      * device.
      */
+
+    private var stuffsViewModel: StuffsViewModel? = null
+
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+
+
     private var twoPane: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        AndroidInjection.inject(this)
         setContentView(R.layout.activity_item_list)
 
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
@@ -53,6 +67,17 @@ class ItemListActivity : AppCompatActivity() {
         }
 
         setupRecyclerView(findViewById(R.id.item_list))
+
+        stuffsViewModel = ViewModelProviders.of(this, viewModelFactory).get(StuffsViewModel::class.java)
+
+        stuffsViewModel?.contactList()?.observe(this, Observer {
+            if (it) {
+                Toast.makeText(this, "Remote data fetched and same store in the DB", Toast.LENGTH_SHORT)
+                    .show()
+            } else {
+                Toast.makeText(this, "Unable to fecth data", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 
     private fun setupRecyclerView(recyclerView: RecyclerView) {
